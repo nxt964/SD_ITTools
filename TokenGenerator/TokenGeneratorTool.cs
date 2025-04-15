@@ -159,8 +159,6 @@ namespace TokenGenerator
                             IncludeSymbols: useSymbols
                         };
 
-                        console.log(data);
-
                         fetch(window.location.pathname + '/execute', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },

@@ -33,14 +33,24 @@ public static class PluginLoader
             NotifyFilter = NotifyFilters.FileName | NotifyFilters.LastWrite
         };
 
-        _watcher.Created += OnPluginAdded;
+        // Thêm file đã được xử lý ở Controller & LoadPlugin(byte[], string filePath)
+        //_watcher.Created += OnPluginAdded;
         _watcher.Deleted += OnPluginRemoved;
         _watcher.EnableRaisingEvents = true;
     }
 
-    private static void LoadPlugin(string filePath)
+    public static ITool? LoadPlugin(string filePath)
     {
-        if (_loadedAssemblies.ContainsKey(filePath)) return;
+        if (!File.Exists(filePath) || !filePath.EndsWith(".dll", StringComparison.OrdinalIgnoreCase))
+        {
+            Console.WriteLine("❌ Invalid plugin file.");
+            return null;
+        }
+
+        if (_loadedAssemblies.ContainsKey(filePath)) {
+            Console.WriteLine($"⚠️ Plugin already loaded: {filePath}");
+            return null; 
+        }
 
         try
         {
@@ -58,6 +68,7 @@ public static class PluginLoader
                     _plugins.Add(plugin);
                     _loadedAssemblies[filePath] = (context, assembly);
                     Console.WriteLine($"🔌 Plugin loaded: {plugin.Name}");
+                    return plugin;
                 }
             }
         }
@@ -65,9 +76,39 @@ public static class PluginLoader
         {
             Console.WriteLine($"❌ Error loading plugin: {ex.Message}");
         }
+
+        return null;
     }
 
+    public static ITool? LoadPlugin(byte[] fileBytes, string filePath)
+    {
+        if (_loadedAssemblies.ContainsKey(filePath)) return null;
 
+        try
+        {
+            var context = new AssemblyLoadContext(filePath, true);
+            using var stream = new MemoryStream(fileBytes);
+            Assembly assembly = context.LoadFromStream(stream);
+
+            var types = assembly.GetTypes().Where(t => typeof(ITool).IsAssignableFrom(t) && !t.IsInterface);
+            foreach (var type in types)
+            {
+                if (Activator.CreateInstance(type) is ITool plugin)
+                {
+                    _plugins.Add(plugin);
+                    _loadedAssemblies[filePath] = (context, assembly);
+                    Console.WriteLine($"🔌 Plugin loaded: {plugin.Name}");
+                    return plugin;
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"❌ Error loading plugin: {ex.Message}");
+        }
+
+        return null;
+    }
 
 
     private static void OnPluginAdded(object sender, FileSystemEventArgs e)

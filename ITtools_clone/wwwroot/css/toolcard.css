@@ -1,0 +1,127 @@
+.tool-link {
+    text-decoration: none;
+    color: inherit;
+}
+
+.tool-card {
+    position: relative;
+    border-radius: 6px;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e0e0e0;
+    transition: transform 0.2s ease-in-out, border-color 0.2s ease-in-out;
+}
+
+.tool-card.premium {
+    border: 1px solid #FFC107;
+    box-shadow: 0 0 10px rgba(255, 193, 7, 0.5);
+}
+.tool-card.premium .card-title {
+    font-weight: 700;
+    color: #FFC107;
+}
+
+.tool-card:hover {
+    cursor: pointer;
+    border-color: #14a058;
+    transform: scale(1.02);
+}
+
+.tool-card:hover .card-title {
+    color: #14a058 !important;
+}
+
+.card-title {
+    font-size: 18px;
+    font-weight: 500;
+    transition: color 0.2s ease-in-out;
+}
+
+.card-title.premium {
+    font-weight: 700;
+    color: #FFC107;
+    font-size: 20px;
+}
+
+.card-text {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    font-size: 16px;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: normal;
+}
+
+.heart-container {
+    position: relative;
+    display: inline-block;
+    z-index: 10;
+}
+
+.heart-icon {
+    font-size: 16px;
+    color: gray;
+    padding: 6px;
+    border-radius: 100%;
+    cursor: pointer;
+}
+
+.heart-icon:hover {
+    background-color: #ebecec;
+}
+
+.heart-icon.liked {
+    color: red;
+}
+
+.heart-tooltip {
+    position: absolute;
+    top: -35px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: black;
+    color: white;
+    padding: 3px 6px;
+    font-size: 14px;
+    border-radius: 4px;
+    white-space: nowrap;
+    visibility: hidden;
+    opacity: 0;
+    z-index: 9999;
+    transition: opacity 0.2s ease-in-out;
+}
+
+.heart-container:hover .heart-tooltip {
+    visibility: visible;
+    opacity: 1;
+}
+
+.tool-card-wrapper {
+    transition: all 0.3s ease;
+}
+
+.fade-slide-in {
+    opacity: 0;
+    transform: translateY(-10px);
+    animation: fadeSlideIn 0.3s ease forwards;
+}
+
+@keyframes fadeSlideIn {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-slide-out {
+    opacity: 1;
+    transform: translateY(0);
+    animation: fadeSlideOut 0.3s ease forwards;
+}
+
+@keyframes fadeSlideOut {
+    to {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+}

@@ -20,3 +20,16 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+.upload-form {
+  max-width: 400px;
+  margin: auto;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  background: #f9f9f9;
+}
+
+.upload-form .form-group {
+  margin-bottom: 15px;
+}

@@ -1,0 +1,50 @@
+@using ITtools_clone.Models
+
+@model (List<Tool> tools, List<int> favouriteToolsId, string query)
+@{
+    ViewData["Title"] = "Search Results";
+    Layout = "_Layout";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/home.css" />
+    <link rel="stylesheet" href="~/css/toolcard.css" />
+}
+
+<div class="container mt-4">
+    <div class="search-results-container">
+        <span class="fw-bold title-tools ms-1">
+            Search results for "<span style="color: #14a058; font-style: italic;">@Model.query</span>"
+        </span>
+        <div class="row mt-3">
+            @if (Model.tools.Count == 0)
+            {
+                <div class="col-12 text-center text-muted mt-3">
+                    No tools found matching your search.
+                </div>
+            }
+            else
+            {
+                foreach (var tool in Model.tools)
+                {
+                    var isUserFavourite = Model.favouriteToolsId.Contains(tool.tid);
+                    @await Component.InvokeAsync("ToolCard", new { tool = tool, isUserFavourite = isUserFavourite })
+                }
+            }
+        </div>
+    </div>
+</div>
+
+
+
+@section Scripts {
+    <script src="~/js/toolcard.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+            tooltipTriggerList.forEach(function (tooltipTriggerEl) {
+                new bootstrap.Tooltip(tooltipTriggerEl)
+            })
+        });
+    </script>
+}

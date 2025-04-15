@@ -6,177 +6,103 @@
     <title>@ViewData["Title"] - ITtools_clone</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/auth.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/defaultlayout.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/ITtools_clone.styles.css" asp-append-version="true" />
     <link href="~/lib/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet" />
     <link href="~/lib/bootstrap-icons/font/bootstrap-icons.min.css" rel="stylesheet" />
     <link href="~/lib/font-awesome/css/all.min.css" rel="stylesheet" />
-    <style>
-        /* Layout */
-        body {
-            display: flex;
-            height: 100vh;
-            overflow: hidden;
-        }
-
-        /* Wrapper chứa Sidebar & Main */
-        #wrapper {
-            display: flex;
-            width: 100vw;
-            height: 100vh;
-            transition: all 0.3s ease-in-out;
-        }
-
-        /* Sidebar */
-        #sidebar {
-            width: 250px;
-            background-color: #f8f9fa;
-            border-right: 1px solid #ddd;
-            transition: width 0.3s ease-in-out, opacity 0.3s ease-in-out;
-        }
-
-        #sidebar.hidden {
-            width: 0;
-            opacity: 0;
-            pointer-events: none; /* Ngăn chặn tương tác khi ẩn */
-        }
-
-        #sidebar a {
-            color: #333 ;
-            text-decoration: none;
-            font-weight: 500;
-            padding: 10px 15px;
-            display: block;
-        }
-
-        #sidebar a:hover {
-            background-color: #e9ecef;
-        }
-
-        #sidebar .nav-container {
-            flex: 1;
-            overflow-y: scroll;
-            padding-bottom: 40px;
-        }
-
-        .nav-item {
-            width: 100%;
-        }
-
-        .nav-item .nav-link {
-            display: block;
-            max-width: 100%;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-
-        /* Main container */
-        #main-container {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            transition: margin-left 0.3s ease-in-out, width 0.3s ease-in-out;
-        }
-
-        /* Header */
-        #header {
-            background-color: #fff;
-            border-bottom: 1px solid #ddd;
-            padding: 10px 20px;
-        }
-
-        #home-tag {
-            border: none;
-            background: none;
-            border-radius: 100%;
-            cursor: pointer;
-            width: 40px;
-            height: 40px;
-            margin-left: 5px;
-            transition: background-color 0.3s ease-in-out;
-        }
-
-        #home-tag a {
-            color: #333;
-            text-decoration: none;
-        }
-
-        #home-tag:hover {
-            background-color: #ebecec;
-        }
-
-        #search-box {
-            width: 300px;
-            padding: 5px 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-
-        /* Toggle Button */
-        #toggleSidebar {
-            background: none;
-            border: none;
-            cursor: pointer;
-            width: 40px;
-            height: 40px;
-            border-radius: 100%;
-            transition: background-color 0.3s ease-in-out;
-        }
-
-        #toggleSidebar:hover {
-            background-color: #ebecec;
-        }
-
-        #toggle-icon {
-            margin-right: 8px;
-            transition: transform 0.3s ease;
-        }
-
-        /* Content */
-        #content {
-            overflow-y: auto;
-            padding: 20px;
-        }
-    </style>
+    @RenderSection("Styles", required: false)
 </head>
 <body>
     <div id="wrapper">
         <!-- Sidebar -->
         <nav id="sidebar" class="d-flex flex-column">
             <div class="text-center mb-4">
-                <a asp-controller="Home" asp-action="Index" class="fs-4 fw-bold">ITtools_clone</a>
+                <a id="title-home" asp-controller="Home" asp-action="Index" class="fs-3 fw-bold d-flex justify-content-center align-items-center">IT - Tools Clone</a>
             </div>
-
             <div class="nav-container">
                 <ul class="nav flex-column">
+                    @await Component.InvokeAsync("FavoriteMenu")
                     @await Component.InvokeAsync("PluginsList")
-
-                    <li class="nav-item">
-                        <a asp-controller="Home" asp-action="TestTool" class="nav-link">New Tool UI</a>
-                    </li>
-
-                    <li class="nav-link fw-bold text-uppercase text-muted small">Test UI</li>
-                    @await Component.InvokeAsync("TestPlugin")
+                    @* <li>
+                        <a class="nav-link" asp-controller="Home" asp-action="TestNewTool">Test new tool</a>
+                    </li> *@
                 </ul>
             </div>
         </nav>
 
         <!-- Main Container -->
         <div id="main-container">
-            <header id="header" class="d-flex justify-content-between align-items-center">
+            <header id="header" class="d-flex align-items-center">
                 <div class="d-flex align-items-center justify-content-center">
                     <button id="toggleSidebar" class="d-flex justify-content-center align-items-center">
                         <i class="bi bi-list fs-2"></i>
                     </button>
 
                     <div id="home-tag" class="d-flex align-items-center justify-content-center">
-                        <a asp-controller="Home" asp-action="Index" class="fs-4 fw-bold">
+                        <a asp-controller="Home" asp-action="Index" class="fw-bold d-flex align-items-center">
                             <i class="bi bi-house-door fs-2"></i>
                         </a>
+                        <span>Home</span>
                     </div>
+
+                    @if (Context.Session.GetInt32("UserId") != null && Context.Session.GetInt32("isAdmin") == 1){
+                        <div id="management-tag" class="d-flex align-items-center justify-content-center">
+                            <a asp-controller="Admin" asp-action="ManageTools" class="fw-bold d-flex align-items-center">
+                                <i class="bi bi-wrench-adjustable-circle fs-2"></i>
+                            </a>
+                            <span>Management Site</span>
+                        </div>
+                    }
                 </div>
-                <input type="text" id="search-box" placeholder="Search...">
+                <div class="flex-grow-1">
+                    <form class="d-flex mx-4" method="get" action="@Url.Action("Search", "Home")">
+                        <input type="text" name="query" id="search-box" placeholder="Search tool..." class="form-control w-100" />
+                        <button type="submit" class="btn btn-primary ms-2">
+                            <i class="bi bi-search"></i>
+                        </button>
+                    </form>
+                </div>
+                <div class="d-flex align-items-center">
+                    @if (Context.Session.GetInt32("UserId") != null)
+                    {
+                        @if (Context.Session.GetInt32("isAdmin") == 0)
+                        {
+                            @if (Context.Session.GetInt32("Premium") == 0)
+                            {
+                                @if (Context.Session.GetInt32("RequestPremium") == 1)
+                                {
+                                    <div class="badge bg-secondary py-2 px-2">
+                                        <span>Waiting for upgrade to Premium</span>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <a asp-controller="User" asp-action="RequestPremium" class="btn btn-warning mx-2">Request Premium Upgrade</a>
+                                }
+                            }
+                            else
+                            {
+                                <div class="badge bg-warning py-2 px-2">
+                                    <span>Premium</span>
+                                </div>
+                            }
+                        }
+                        <div class="d-flex align-items-center mx-2 px-2">
+                            <p class="m-0">
+                                Welcome,
+                                <span class="fw-bold">@Context.Session.GetString("Username")</span>
+                            </p>
+                        </div>
+                        <a asp-controller="Auth" asp-action="Logout" class="btn btn-danger mx-2">Log out</a>
+                    }
+                    else
+                    {
+                        <a asp-controller="Auth" asp-action="Login" class="btn btn-primary mx-2">Log in</a>
+                        <a asp-controller="Auth" asp-action="Register" class="btn btn-primary">Register</a>
+                    }
+                </div>
             </header>
             <div id="content">
                 @RenderBody()
@@ -186,44 +112,7 @@
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            let sidebar = document.getElementById("sidebar");
-            let toggleButton = document.getElementById("toggleSidebar");
-
-            // Layout
-            function updateLayout() {
-				if (window.innerWidth > 800) {
-					sidebar.classList.remove("hidden");
-				} else {
-                    sidebar.classList.add("hidden");
-				}
-			}
-
-            toggleButton.addEventListener("click", function () {
-                sidebar.classList.toggle("hidden");
-            });
-
-            window.addEventListener("resize", updateLayout);
-
-            updateLayout();
-
-
-            // Toggle icon
-            let toggles = document.querySelectorAll('[data-bs-toggle="collapse"]');
-
-            toggles.forEach(toggle => {
-                let icon = toggle.querySelector("#toggle-icon");
-
-                toggle.addEventListener("click", function () {
-                    let isOpen = toggle.getAttribute("aria-expanded") === "true";
-                    
-                    icon.classList.toggle("bi-chevron-right", !isOpen);
-                    icon.classList.toggle("bi-chevron-down", isOpen);
-                });
-            });
-        });
-
-    </script>
+    <script src="~/js/defaultlayout.js"></script>
+    @RenderSection("Scripts", required: false)
 </body>
 </html>

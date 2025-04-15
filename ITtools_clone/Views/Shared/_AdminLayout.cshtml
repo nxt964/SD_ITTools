@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Admin Dashboard</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/auth.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/ITtools_clone.styles.css" asp-append-version="true" />
+    <link href="~/lib/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet" />
+    <link href="~/lib/bootstrap-icons/font/bootstrap-icons.min.css" rel="stylesheet" />
+    <link href="~/lib/font-awesome/css/all.min.css" rel="stylesheet" />
+    <style>
+        /* Admin panel specific styles */
+        .sidebar {
+            background-color: #343a40;
+            color: white;
+            min-height: 100vh;
+        }
+        .admin-content {
+            padding: 20px;
+        }
+        .sidebar-header {
+            padding: 15px;
+            border-bottom: 1px solid #4e555b;
+        }
+        .nav-link {
+            color: #d0d0d0;
+        }
+        .nav-link:hover {
+            color: white;
+            background-color: #4e555b;
+        }
+        .nav-link.active {
+            color: white;
+            background-color: #007bff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-2 px-0 sidebar">
+                <div class="sidebar-header">
+                    <h4>ITtools Admin</h4>
+                    <p class="small mb-0">Welcome, @Context.Session.GetString("Username")</p>
+                </div>
+                <ul class="nav flex-column mt-3">
+                    <li class="nav-item">
+                        <a class="nav-link @(ViewContext.RouteData.Values["Action"].ToString() == "ManageTools" ? "active" : "")" asp-controller="Admin" asp-action="ManageTools">
+                            <i class="bi bi-tools me-2"></i> Manage Tools
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link @(ViewContext.RouteData.Values["Action"].ToString() == "ManageUsers" ? "active" : "")" asp-controller="Admin" asp-action="ManageUsers">
+                            <i class="bi bi-people me-2"></i> Manage Users
+                        </a>
+                    </li>
+                    <li class="nav-item mt-5">
+                        <a class="nav-link" asp-controller="Home" asp-action="Index">
+                            <i class="bi bi-arrow-left me-2"></i> Back to Site
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-danger" asp-controller="Auth" asp-action="Logout">
+                            <i class="bi bi-box-arrow-right me-2"></i> Logout
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            
+            <!-- Main Content -->
+            <div class="col-md-10 admin-content">
+                <h1 class="mb-4">@ViewData["Title"]</h1>
+                @RenderBody()
+            </div>
+        </div>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

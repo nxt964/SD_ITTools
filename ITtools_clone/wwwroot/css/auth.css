@@ -1,0 +1,62 @@
+/* wwwroot/css/auth.css */
+
+/* Định dạng chung cho trang đăng nhập và đăng ký */
+.auth-container {
+    width: 350px;
+    padding: 20px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    margin: 50px auto;
+}
+
+/* Tiêu đề */
+.auth-container h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* Input fields */
+.auth-container input {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+/* Label */
+.auth-container label {
+    font-weight: bold;
+}
+
+/* Nút đăng nhập / đăng ký */
+.auth-container button {
+    width: 100%;
+    background-color: #007bff;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.auth-container button:hover {
+    background-color: #0056b3;
+}
+
+/* Link chuyển giữa Login & Register */
+.auth-container p {
+    text-align: center;
+    margin-top: 10px;
+}
+
+.auth-container a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.auth-container a:hover {
+    text-decoration: underline;
+}

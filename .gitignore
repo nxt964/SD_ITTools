@@ -4,3 +4,5 @@
 **/out/
 **/Debug/
 **/Release/
+**/ITtools_clone/appsettings.json
+**/.env

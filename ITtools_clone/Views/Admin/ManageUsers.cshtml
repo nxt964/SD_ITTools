@@ -1,0 +1,82 @@
+@model IEnumerable<ITtools_clone.Models.User>
+@{
+    ViewData["Title"] = "Manage Users";
+    Layout = "_AdminLayout";
+}
+
+<div class="card">
+    <div class="card-header bg-light">
+        <h5 class="mb-0">Update User Premium Status</h5>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Premium Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var user in Model)
+                    {
+                        <tr>
+                            <td>@user.usid</td>
+                            <td>@user.username</td>
+                            <td>@user.email</td>
+                            <td>
+                                @if (user.premium)
+                                {
+                                    <span class="badge bg-warning">Premium</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">Free</span>
+                                    @if (user.request_premium)
+                                    {
+                                        <span class="badge bg-info ms-1">Requested Upgrade</span>
+                                    }
+                                }
+                            </td>
+                            <td>
+                                <form asp-action="UpdateUserPremium" method="post" style="display:inline;">
+                                    <input type="hidden" name="id" value="@user.usid" />
+                                    <input type="hidden" name="premium" value="@(!user.premium)" />
+                                    @if (user.premium)
+                                    {
+                                        <button type="submit" class="btn btn-sm btn-outline-secondary">
+                                            <i class="bi bi-arrow-down"></i> Downgrade to Free
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        <button type="submit" class="btn btn-sm btn-outline-warning">
+                                            <i class="bi bi-arrow-up"></i> Upgrade to Premium
+                                            @if (user.request_premium)
+                                            {
+                                                <i class="bi bi-exclamation-circle-fill text-info ms-1" title="User has requested premium"></i>
+                                            }
+                                        </button>
+                                    }
+                                </form>
+                                
+                                @if (!user.premium && user.request_premium)
+                                {
+                                    <form asp-action="DenyPremiumRequest" method="post" style="display:inline; margin-left: 5px;">
+                                        <input type="hidden" name="id" value="@user.usid" />
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">
+                                            <i class="bi bi-x-circle"></i> Deny Request
+                                        </button>
+                                    </form>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

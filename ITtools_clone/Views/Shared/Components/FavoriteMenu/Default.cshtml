@@ -1,0 +1,21 @@
+@using ITtools_clone.Helpers
+
+@model List<ITtools_clone.Models.Tool>
+
+<li class="nav-item @(Model.Count == 0 ? "d-none" : "")" id="favorite-menu-item">
+    <a class="nav-link text-uppercase text-muted small" data-bs-toggle="collapse" href="#FavoriteMenu" role="button">
+        <i id="toggle-icon" class="bi bi-chevron-right"></i> Your favorite tools
+    </a>
+    <div class="collapse" id="FavoriteMenu">
+        <ul class="nav flex-column ms-3">
+            @foreach (var tool in Model)
+            {
+                <li class="nav-item">
+                    <a class="nav-link fw-bold" href="/@Utils.Slugify(tool.tool_name)" data-tool-id="@tool.tid">
+                        @tool.tool_name
+                    </a>
+                </li>
+            }
+        </ul>
+    </div>
+</li>

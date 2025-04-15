@@ -1,0 +1,87 @@
+@model IEnumerable<ITtools_clone.Models.Tool>
+@{
+    ViewData["Title"] = "Manage Tools";
+    Layout = "_AdminLayout";
+    int rowNumber = 1; 
+}
+
+<div class="card">
+    <div class="card-header bg-light d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">All Tools</h5>
+        <a asp-controller="Plugin" asp-action="AddTool" class="btn btn-primary">
+            <i class="bi bi-plus"></i> Add Tool
+        </a>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Name</th>
+                        <th>Category</th>
+                        <th>Status</th>
+                        <th>Premium</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var tool in Model)
+                    {
+                        <tr>
+                            <td>@(rowNumber++)</td>
+                            <td>@tool.tool_name</td>
+                            <td>@tool.category_name</td>
+                            <td>
+                                <form asp-action="UpdateToolStatus" method="post" style="display:inline;">
+                                    <input type="hidden" name="id" value="@tool.tid" />
+                                    <!-- This is the key change - we need to send the OPPOSITE of the current value -->
+                                    <input type="hidden" name="enabled" value="@(!tool.enabled)" />
+                                    
+                                    @if (tool.enabled)
+                                    {
+                                        <button type="submit" class="btn btn-sm btn-success">
+                                            <i class="bi bi-toggle-on"></i> Enabled
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        <button type="submit" class="btn btn-sm btn-danger">
+                                            <i class="bi bi-toggle-off"></i> Disabled
+                                        </button>
+                                    }
+                                </form>
+                            </td>
+                            <td>
+                                <form asp-action="UpdateToolPremium" method="post" style="display:inline;">
+                                    <input type="hidden" name="id" value="@tool.tid" />
+                                    <input type="hidden" name="premium" value="@(!tool.premium_required)" />
+                                    @if (tool.premium_required)
+                                    {
+                                        <button type="submit" class="btn btn-sm btn-warning">
+                                            <i class="bi bi-star-fill"></i> Premium
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        <button type="submit" class="btn btn-sm btn-secondary">
+                                            <i class="bi bi-star"></i> Free
+                                        </button>
+                                    }
+                                </form>
+                            </td>
+                            <td>
+                                <form asp-action="DeleteTool" method="post" style="display:inline;">
+                                    <input type="hidden" name="id" value="@tool.tid" />
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Are you sure you want to delete this tool?')">
+                                        <i class="bi bi-trash"></i> Delete
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
