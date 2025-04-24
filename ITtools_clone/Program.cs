@@ -37,11 +37,13 @@ namespace ITtools_clone
             builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddScoped<IToolRepository, ToolRepository>();
             builder.Services.AddScoped<IFavouriteRepository, FavouriteRepository>();
+            builder.Services.AddScoped<IPluginRepository, PluginRepository>();
 
             // Register services
             builder.Services.AddScoped<IUserService, UserService>();
             builder.Services.AddScoped<IToolService, ToolService>();
             builder.Services.AddScoped<IFavouriteService, FavouriteService>();
+            builder.Services.AddScoped<IPluginService, PluginService>();
 
             builder.Services.AddDistributedMemoryCache(); // Lưu trữ session trong bộ nhớ
 

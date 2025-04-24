@@ -5,6 +5,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using ToolInterface;
+using SHA3.Net;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace HashText
@@ -26,27 +27,27 @@ namespace HashText
             try
             {
                 var json = input?.ToString();
-                if (string.IsNullOrWhiteSpace(json)) return "Invalid Request.";
+                if (string.IsNullOrWhiteSpace(json)) return new { result = "Invalid Request." };
 
                 var request = JsonSerializer.Deserialize<HashTextRequest>(json);
                 if (request == null || string.IsNullOrEmpty(request.InputText))
-                    return "Invalid Request";
+                    return new { result = "Invalid Request" };
 
-                var result = new Dictionary<string, string>
+                var hashResults = new Dictionary<string, string>
                 {
                     { "MD5", ComputeHash(request.InputText, MD5.Create(), request.OutputFormat) },
                     { "SHA1", ComputeHash(request.InputText, SHA1.Create(), request.OutputFormat) },
                     { "SHA256", ComputeHash(request.InputText, SHA256.Create(), request.OutputFormat) },
                     { "SHA512", ComputeHash(request.InputText, SHA512.Create(), request.OutputFormat) },
-                    { "SHA3", ComputeHash(request.InputText, SHA3_512.Create(), request.OutputFormat) },
-                    { "SHA384", ComputeHash(request.InputText, SHA384.Create(), request.OutputFormat) }
+                    { "SHA3", ComputeHash(request.InputText, Sha3.Sha3512(), request.OutputFormat) },
+                    { "SHA384", ComputeHash(request.InputText, Sha3.Sha3384(), request.OutputFormat) }
                 };
 
-                return result;
+                return new { result = hashResults }; 
             }
             catch (Exception ex)
             {
-                return $"Error: {ex.Message}";
+                return new { result = $"Error: {ex.Message}" };
             }
         }
 
@@ -176,10 +177,11 @@ namespace HashText
                             body: JSON.stringify(data)
                         })
                         .then(response => response.json())
-                        .then(data => data.result)
+                        .then(data => {
+                            return data.result.result;
+                        })
                         .then(hashResults => {
                             Object.keys(hashResults).forEach(algo => {
-                                console.log(algo, hashResults[algo]);
                                 let hashElement = document.getElementById(algo.toLowerCase());
                                 if (hashElement) {
                                     hashElement.textContent = hashResults[algo];

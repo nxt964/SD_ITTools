@@ -22,7 +22,21 @@
             }
         </div>
         <div id="no-favourite-message" class="text-muted ms-2 mt-2 @(Model.FavouriteTools.Count == 0 ? "" : "d-none")">
-            You have no favorite tools yet. Click the heart icon on any tool to add it to your favorites!
+            @if (Context.Session.GetInt32("UserId") == null)
+            {
+                <span>
+                    You need to
+                    <a href="/Auth/Login" class="text-decoration-none fw-bold">Log in</a> to your account
+                    to see your favorite tools.
+                </span>
+            }
+            else
+            {
+                <span>You don't have any favorite tools yet. Click
+                    <i class="bi bi-heart-fill"></i>
+                     on any tool to add it to your favorites!
+                </span>
+            }
         </div>
     </div>
     <div class="tools-container mt-4">

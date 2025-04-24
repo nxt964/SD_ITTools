@@ -22,15 +22,13 @@ namespace ITtools_clone.Controllers
             // Check if user is admin
             bool isAdmin = HttpContext.Session.GetInt32("isAdmin") == 1;
             bool isPremiumUser = HttpContext.Session.GetInt32("Premium") == 1;
-            int? userId = HttpContext.Session.GetInt32("UserId");
+            int userId = HttpContext.Session.GetInt32("UserId").GetValueOrDefault();
 
             var allTools = isAdmin 
                 ? _toolService.GetAllTools() 
                 : _toolService.GetEnabledTools();
 
-            var favouriteTools = (userId != null) 
-                ? _favouriteService.GetFavouriteToolsByUserId(userId.Value) 
-                : new List<Tool>();
+            var favouriteTools = _favouriteService.GetFavouriteToolsByUserId(userId);
 
             var model = new HomeViewModel
             {
@@ -71,13 +69,6 @@ namespace ITtools_clone.Controllers
                 return NotFound();
             }
             
-            // Check if tool requires premium and user is not premium
-            if (tool.premium_required && HttpContext.Session.GetInt32("Premium") != 1)
-            {
-                return View("PremiumRequired");
-            }
-            
-            // Continue to the tool
             return View(tool);
         }
 
@@ -87,21 +78,12 @@ namespace ITtools_clone.Controllers
             if (!string.IsNullOrEmpty(query))
             {
                 bool isAdmin = HttpContext.Session.GetInt32("isAdmin") == 1;
-                bool isPremiumUser = HttpContext.Session.GetInt32("Premium") == 1;
-                int? userId = HttpContext.Session.GetInt32("UserId");
+                int userId = HttpContext.Session.GetInt32("UserId").GetValueOrDefault();
 
-                var allTools = isAdmin 
-                    ? _toolService.GetAllTools() 
-                    : _toolService.GetEnabledTools();
+                // Use dedicated search method from service
+                var filteredTools = _toolService.SearchTools(query, isAdmin);
 
-                var filteredTools = allTools
-                    .Where(t => t.tool_name.Contains(query, StringComparison.OrdinalIgnoreCase) || 
-                                t.description.Contains(query, StringComparison.OrdinalIgnoreCase))
-                    .ToList();
-
-                var favouriteToolsId = (userId != null) 
-                    ? _favouriteService.GetFavouriteToolsByUserId(userId.Value).Select(t => t.tid).ToList() 
-                    : new List<int>();
+                var favouriteToolsId = _favouriteService.GetFavouriteToolIdsByUserId(userId);
 
                 return View("Search", (filteredTools, favouriteToolsId, query));
             }

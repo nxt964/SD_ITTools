@@ -10,23 +10,31 @@ namespace ITtools_clone.Services
         List<Tool> GetAllTools();
         List<Tool> GetEnabledTools();
         List<Tool> GetToolsForUser(bool isPremiumUser);
-        Dictionary<string, List<string>> GetCategorizedTools(bool isAdmin, bool isPremiumUser);
+        Dictionary<string, List<string>> GetCategorizedTools(bool isAdmin);
         Tool GetToolById(int id);
         void AddTool(Tool tool);
         void UpdateTool(Tool tool);
         void DeleteTool(int id);
+        bool DeleteToolWithRelatedData(int toolId);
         bool ValidateTool(Tool tool);
         Tool GetToolByName(string toolName);
+        List<Tool> SearchTools(string query, bool isAdmin);
     }
 
     public class ToolService : IToolService
     {
         private readonly IToolRepository _toolRepository;
+        private readonly IPluginRepository _pluginRepository;
+        private readonly IFavouriteService _favouriteService;
 
-        public ToolService(IToolRepository toolRepository)
+        public ToolService(IToolRepository toolRepository, IPluginRepository pluginRepository, IFavouriteService favouriteService)
         {
             _toolRepository = toolRepository;
+            _pluginRepository = pluginRepository;
+            _favouriteService = favouriteService;
         }
+
+        
 
         public List<Tool> GetAllTools()
         {
@@ -56,14 +64,15 @@ namespace ITtools_clone.Services
         }
 
         // Modified method to consider premium status
-        public Dictionary<string, List<string>> GetCategorizedTools(bool isAdmin = false, bool isPremiumUser = false)
+        public Dictionary<string, List<string>> GetCategorizedTools(bool isAdmin)
         {
-            var tools = isAdmin ? GetAllTools() : GetEnabledTools();
+            var toolsByCategory = _toolRepository.GetToolsByCategory(enabledOnly: !isAdmin);
             
-            return tools
-                .Where(t => !string.IsNullOrEmpty(t.category_name))
-                .GroupBy(t => t.category_name!)
-                .ToDictionary(g => g.Key, g => g.Select(t => t.tool_name!).ToList());
+            // Transform to required output format
+            return toolsByCategory.ToDictionary(
+                category => category.Key,
+                category => category.Value.Select(t => t.tool_name!).ToList()
+            );
         }
 
         public Tool GetToolById(int id)
@@ -101,6 +110,35 @@ namespace ITtools_clone.Services
             _toolRepository.DeleteTool(id);
         }
 
+        public bool DeleteToolWithRelatedData(int toolId)
+        {
+            try
+            {
+                // Get tool for its file name
+                var tool = GetToolById(toolId);
+                if (tool == null) return false;
+                
+                // Delete physical file if exists
+                if (!string.IsNullOrEmpty(tool.file_name))
+                {
+                    _pluginRepository.DeletePluginFile(tool.file_name);
+                }
+                
+                // Delete favorites
+                _favouriteService.RemoveFromFavouritesByToolId(toolId);
+                
+                // Delete tool record
+                DeleteTool(toolId);
+                
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in DeleteToolWithRelatedData: {ex.Message}");
+                return false;
+            }
+        }
+
         public bool ValidateTool(Tool tool)
         {
             // Add business validation logic here
@@ -115,9 +153,14 @@ namespace ITtools_clone.Services
 
         public Tool GetToolByName(string toolName)
         {
-            return _toolRepository.GetAllTools()
-                .FirstOrDefault(t => t.tool_name != null && 
-                                   t.tool_name.Equals(toolName, StringComparison.OrdinalIgnoreCase));
+            return _toolRepository.GetToolByName(toolName);
+        }
+
+        public List<Tool> SearchTools(string query, bool isAdmin)
+        {
+            var searchResults = _toolRepository.SearchTools(query, !isAdmin);
+            
+            return searchResults;
         }
     }
 }

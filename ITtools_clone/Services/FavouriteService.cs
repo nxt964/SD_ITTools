@@ -6,6 +6,7 @@ namespace ITtools_clone.Services
     public interface IFavouriteService
     {
         List<Tool> GetFavouriteToolsByUserId(int userId);
+        List<int> GetFavouriteToolIdsByUserId(int userId);
         void AddToFavourites(int userId, int toolId);
         void RemoveFromFavourites(int userId, int toolId);
         void RemoveFromFavouritesByUserId(int userId);
@@ -24,6 +25,13 @@ namespace ITtools_clone.Services
         public List<Tool> GetFavouriteToolsByUserId(int userId)
         {
             return _favouriteRepository.GetFavouriteToolsByUserId(userId);
+        }
+
+        public List<int> GetFavouriteToolIdsByUserId(int userId)
+        {
+            return GetFavouriteToolsByUserId(userId)
+                .Select(tool => tool.tid)
+                .ToList();
         }
 
         public void AddToFavourites(int userId, int toolId)

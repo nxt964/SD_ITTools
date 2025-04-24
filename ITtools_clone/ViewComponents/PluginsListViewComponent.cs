@@ -20,14 +20,7 @@ namespace ITtools_clone.ViewComponents
             // Check if user is admin
             bool isAdmin = _httpContextAccessor.HttpContext?.Session.GetInt32("isAdmin") == 1;
 
-            if (isAdmin) {
-                return View(_toolService.GetCategorizedTools(true, false));
-            }
-            else {
-                // Check if user is premium
-                bool isPremiumUser = _httpContextAccessor.HttpContext?.Session.GetInt32("Premium") == 1;
-                return View(_toolService.GetCategorizedTools(false, isPremiumUser));
-            }
+            return View(_toolService.GetCategorizedTools(isAdmin));
         }
     }
 }

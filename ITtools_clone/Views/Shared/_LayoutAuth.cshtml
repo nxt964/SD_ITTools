@@ -41,7 +41,10 @@
 </head>
 <body>
     <div class="d-flex flex-column justify-content-center align-items-center vh-100">
-        <h1 class="site-title">Welcome to IT-Tools</h1>
+        <a href="@Url.Action("Index", "Home")" class="d-flex justify-content-center align-items-center text-decoration-none">
+            <h1 class="site-title">Welcome to IT-Tools</h1>
+        </a>
+        
     
         <div class="auth-container">
             <h2 class="text-center mb-4 fw-bold fs-1">@ViewData["Title"]</h2>

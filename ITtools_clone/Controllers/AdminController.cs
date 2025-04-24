@@ -48,7 +48,7 @@ namespace ITtools_clone.Controllers
         }
 
         [HttpPost]
-        public IActionResult UpdateToolStatus(int id, bool enabled)
+        public IActionResult UpdateToolStatus(int id)
         {
             // Check if user is admin
             if (HttpContext.Session.GetInt32("isAdmin") != 1)
@@ -97,45 +97,22 @@ namespace ITtools_clone.Controllers
                 return RedirectToAction("Login", "Auth");
             }
 
-            // Get tool from database
-            var tool = _toolService.GetToolById(id);
-            if (tool == null)
-            {
-                return NotFound();
-            }
-
             try
             {
-                if (!string.IsNullOrEmpty(tool.file_name))
+                bool success = _toolService.DeleteToolWithRelatedData(id);
+                
+                if (success)
                 {
-                    string pluginsPath = Path.Combine(Directory.GetCurrentDirectory(), "Plugins");
-                    string filePath = Path.Combine(pluginsPath, tool.file_name);
-                    
-                    if (System.IO.File.Exists(filePath))
-                    {
-                        try
-                        {
-                            System.IO.File.Delete(filePath);
-                            Console.WriteLine($"Deleted plugin file: {filePath}");
-                        }
-                        catch (Exception ex)
-                        {
-                            Console.WriteLine($"Error deleting file: {ex.Message}");
-                            // Consider marking for later deletion if file is locked
-                        }
-                    }
+                    TempData["SuccessMessage"] = "Tool and associated files deleted successfully.";
                 }
-
-                _toolService.DeleteTool(id);
-                // Remove associated favourites
-                _favouriteService.RemoveFromFavouritesByToolId(id);
-
-                TempData["SuccessMessage"] = "Tool and associated files deleted successfully.";
+                else
+                {
+                    TempData["ErrorMessage"] = "Tool not found or could not be deleted.";
+                }
             }
             catch (Exception ex)
             {
                 TempData["ErrorMessage"] = $"Error deleting tool: {ex.Message}";
-                Console.WriteLine($"Error in DeleteTool: {ex.Message}");
             }
             
             return RedirectToAction("ManageTools");
@@ -155,8 +132,13 @@ namespace ITtools_clone.Controllers
         }
 
         [HttpPost]
-        public IActionResult UpdateUserPremium(int id, bool premium)
+        public IActionResult UpdateUserPremium(int id)
         {
+            if (HttpContext.Session.GetInt32("isAdmin") != 1)
+            {
+                return RedirectToAction("Login", "Auth");
+            }
+            
             var user = _userService.GetUserById(id);
             if (user == null)
             {
